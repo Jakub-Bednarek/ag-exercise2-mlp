@@ -54,6 +54,17 @@ def perform_mlp_classification_activation(diagnosis_data, parameters, hidden_lay
         
     return scores
 
+def perform_mlp_classification_by_solver(diagnosis_data, parameters, hidden_layer_size, activation_method):
+    solvers = ["lbfgs", "sgd", "adam"]
+    scores = {}
+
+    for solver in solvers:
+        mlp = MLPClassifier(hidden_layer_sizes=hidden_layer_size, random_state=1410, max_iter=400, activation=activation_method, solver=solver)
+        score = cross_val_score(mlp, parameters, diagnosis_data, scoring='balanced_accuracy').mean()
+        scores[solver] = score
+        
+    return scores
+
 def main():
     diagnosis, parameters = read_and_preprocess_data(DATA_FILE_PATH)
 
@@ -68,6 +79,12 @@ def main():
     
     print(activation_scores)
     print(best_activation_classification_activation)
+
+    solver_scores = perform_mlp_classification_by_solver(diagnosis_data=diagnosis, parameters=parameters, hidden_layer_size=best_hidden_layer_classification_layer, activation_method=best_activation_classification_activation)
+    best_solvers_classification_solver = get_best_layer_parameter(solver_scores)
+    
+    print(solver_scores)
+    print(best_solvers_classification_solver)
 
 if __name__ == "__main__":
     main()
